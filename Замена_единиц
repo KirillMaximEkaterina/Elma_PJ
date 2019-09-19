@@ -1,0 +1,21 @@
+import numpy as np
+import pandas as pd
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import KFold
+from sklearn.preprocessing import scale
+from sklearn.model_selection import cross_val_score
+
+df=pd.read_csv(r'Имя_Файла',encoding='cp1251', sep=';') #Чтение файла
+
+df['REG_ADDRESS_PROVINCE'].value_counts() #Вывод значений адреса(Изначальный)
+
+a = df.groupby("REG_ADDRESS_PROVINCE").filter(lambda x: len(x) < 5)["REG_ADDRESS_PROVINCE"].values #Блок замены
+d = dict()
+for aa in a :
+    d[aa] = 'Прочее'
+d
+df['REG_ADDRESS_PROVINCE1'] = df['REG_ADDRESS_PROVINCE'].replace(d)
+df['REG_ADDRESS_PROVINCE1'].value_counts()   # REG_ADDRESS_PROVINCE1 - Итоговый список
+
+
+df.head()
