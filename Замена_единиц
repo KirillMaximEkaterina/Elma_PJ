@@ -5,17 +5,45 @@ from sklearn.model_selection import KFold
 from sklearn.preprocessing import scale
 from sklearn.model_selection import cross_val_score
 
-df=pd.read_csv(r'Имя_Файла',encoding='cp1251', sep=';') #Чтение файла
+df=pd.read_csv(r'C:\Users\Лена\Credit.csv',encoding='cp1251', sep=';') #Чтение файла
 
-df['REG_ADDRESS_PROVINCE'].value_counts() #Вывод значений адреса(Изначальный)
 
 a = df.groupby("REG_ADDRESS_PROVINCE").filter(lambda x: len(x) < 5)["REG_ADDRESS_PROVINCE"].values #Блок замены
 d = dict()
-for aa in a :
-    d[aa] = 'Прочее'
-d
+for i in a :
+    d[i] = 'Прочее'
 df['REG_ADDRESS_PROVINCE1'] = df['REG_ADDRESS_PROVINCE'].replace(d)
-df['REG_ADDRESS_PROVINCE1'].value_counts()   # REG_ADDRESS_PROVINCE1 - Итоговый список
+
+a1 = df.groupby("FACT_ADDRESS_PROVINCE").filter(lambda x: len(x) < 5)["FACT_ADDRESS_PROVINCE"].values #Блок замены
+d1 = dict()
+for i1 in a1 :
+    d1[i1] = 'Прочее'
+df['FACT_ADDRESS_PROVINCE1'] = df['FACT_ADDRESS_PROVINCE'].replace(d1)
+
+a2 = df.groupby("POSTAL_ADDRESS_PROVINCE").filter(lambda x: len(x) < 5)["POSTAL_ADDRESS_PROVINCE"].values #Блок замены
+d2 = dict()
+for i2 in a2 :
+    d2[i2] = 'Прочее'
+df['POSTAL_ADDRESS_PROVINCE1'] = df['POSTAL_ADDRESS_PROVINCE'].replace(d2)
+
+a3 = df.groupby("EDUCATION").filter(lambda x: len(x) < 5)["EDUCATION"].values #Блок замены
+d3 = dict()
+for i3 in a3 :
+    d3[i3] = 'Два и более высших образования'
+df['EDUCATION1'] = df['EDUCATION'].replace(d3)
+
+a4 = df.groupby("GEN_INDUSTRY").filter(lambda x: len(x) < 9)["GEN_INDUSTRY"].values #Блок замены
+d4 = dict()
+for i4 in a4 :
+    d4[i4] = 'Логистика'
+df['GEN_INDUSTRY1'] = df['GEN_INDUSTRY'].replace(d4)
 
 
-df.head()
+df['PREVIOUS_CARD_NUM_UTILIZED1'] = df['PREVIOUS_CARD_NUM_UTILIZED'].isnull() #КОПИЯ ДЛЯ ПОДСЧЁТА NaN
+df['WORK_TIME2'] = df['WORK_TIME'].isnull() #КОПИЯ ДЛЯ ПОДСЧЁТА NaN
+
+df['PREVIOUS_CARD_NUM_UTILIZED']= df['PREVIOUS_CARD_NUM_UTILIZED'].fillna(df['PREVIOUS_CARD_NUM_UTILIZED'].mean()) #Сред знач пропусков
+df['WORK_TIME1']= df['WORK_TIME'].fillna(36)
+
+df.head(5)
+df.fillna(-1)
