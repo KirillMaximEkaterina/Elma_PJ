@@ -4,9 +4,16 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import KFold
 from sklearn.preprocessing import scale
 from sklearn.model_selection import cross_val_score
+from sklearn.svm import SVC
+from sklearn.linear_model import LogisticRegression
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import GridSearchCV, train_test_split
+from sklearn.metrics import accuracy_score, confusion_matrix, roc_auc_score, roc_curve
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 df=pd.read_csv(r'C:\Users\Лена\Credit.csv',encoding='cp1251', sep=';') #Чтение файла
-
+df[['PERSONAL_INCOME']] = df[['PERSONAL_INCOME']].astype(int)  # Преобразование float = int
 
 a = df.groupby("REG_ADDRESS_PROVINCE").filter(lambda x: len(x) < 5)["REG_ADDRESS_PROVINCE"].values #Блок замены
 d = dict()
@@ -38,12 +45,18 @@ for i4 in a4 :
     d4[i4] = 'Логистика'
 df['GEN_INDUSTRY1'] = df['GEN_INDUSTRY'].replace(d4)
 
-
 df['PREVIOUS_CARD_NUM_UTILIZED1'] = df['PREVIOUS_CARD_NUM_UTILIZED'].isnull() #КОПИЯ ДЛЯ ПОДСЧЁТА NaN
 df['WORK_TIME2'] = df['WORK_TIME'].isnull() #КОПИЯ ДЛЯ ПОДСЧЁТА NaN
 
-df['PREVIOUS_CARD_NUM_UTILIZED']= df['PREVIOUS_CARD_NUM_UTILIZED'].fillna(df['PREVIOUS_CARD_NUM_UTILIZED'].mean()) #Сред знач пропусков
+df['PREVIOUS_CARD_NUM_UTILIZED']= df['PREVIOUS_CARD_NUM_UTILIZED'].fillna(1) #Утил карты
 df['WORK_TIME1']= df['WORK_TIME'].fillna(36)
 
 df.head(5)
 df.fillna(-1)
+
+X = df[['AGE', 'LOAN_DLQ_NUM', 'PERSONAL_INCOME']] #Обучение модели исходя из Возраста, кол-ва просрочек, Перс.З/П
+y = df['TARGET']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+clf = SVC(kernel='linear', C=1.0, random_state=241, probability=True)
+clf.fit(X_train, y_train)
+print(accuracy_score(y_test, clf.predict(X_test)))
